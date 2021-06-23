@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 use std::process;
+use std::env;
 
 use aya::Bpf;
 use aya::programs::{Xdp, XdpFlags, Link};
@@ -10,7 +11,14 @@ use tokio::signal;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     if unsafe { libc::geteuid() } != 0 {
-        println!("You must be root to use eBPF!");
+        println!("You must be root to use eBPF.");
+        process::exit(1);
+    }
+
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() < 2 {
+        println!("You must set interface name.");
         process::exit(1);
     }
 
@@ -21,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
 
     xdp_p.load()?;
 
-    let mut xdp_l = match xdp_p.attach("docker0", XdpFlags::default()) {
+    let mut xdp_l = match xdp_p.attach(&args[1], XdpFlags::default()) {
         Ok(link) => link,
         Err(_) => panic!("failed to attach xdp"),
     };

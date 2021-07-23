@@ -3,11 +3,21 @@ name = "aya-example"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-probe = { path = "./probe" }
+bpf = { path = "bpf" }
 anyhow = "1"
-aya = { git = "https://github.com/alessandrod/aya", branch = "main" }
+aya = { git = "https://github.com/alessandrod/aya", branch = "main", features = ["async_tokio"] }
+bytes = "1.0.1"
+signal-hook = "0.3.9"
 tokio = { version = "1", features = ["full"] }
 libc = "0.2"
+
+[workspace]
+members = ["bpf"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

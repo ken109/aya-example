@@ -1,2 +1,4 @@
 target/
 Cargo.lock
+
+/bpf/src/gen.rs
